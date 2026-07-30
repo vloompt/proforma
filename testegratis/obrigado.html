@@ -3,63 +3,88 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pedido recebido — Proforma</title>
+<title>Pedido recebido — escolha o seu horário | Proforma</title>
 <meta name="robots" content="noindex">
 <link rel="icon" href="assets/simbolo-cor.png">
 <style>
 /* Thank You — mesma gramática da LP (papel, tinta, rosa, BOB) */
 :root{
-  --papel:#f7f4ee; --tinta:#17111f; --tinta-60:#5d5766;
+  --papel:#f7f4ee; --papel2:#efeae1; --tinta:#17111f; --tinta-60:#5d5766;
   --rosa:#ff349c; --roxo:#7600f2; --noite:#1d1230;
   --linha:rgba(23,17,31,.16);
   --font:ui-sans-serif,system-ui,-apple-system,"Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
 body{font-family:var(--font);background:var(--papel);color:var(--tinta);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
-.wrap{max-width:860px;margin:0 auto;padding:0 22px}
-header{border-bottom:1.5px solid var(--linha)}
+.wrap{max-width:1140px;margin:0 auto;padding:0 22px}
+header{border-bottom:1.5px solid var(--linha);background:rgba(247,244,238,.92);position:sticky;top:0;z-index:20;backdrop-filter:blur(10px)}
 .hd{display:flex;align-items:center;justify-content:center;height:64px}
 .hd img{height:26px;width:auto}
-main{padding:64px 0 90px;text-align:center}
+
+/* topo */
+.topo{padding:52px 0 0;text-align:center}
 .selo{
-  width:86px;height:86px;border-radius:50%;background:var(--rosa);margin:0 auto 30px;
-  display:grid;place-items:center;border:3px solid var(--tinta);box-shadow:0 7px 0 var(--tinta);
+  width:74px;height:74px;border-radius:50%;background:var(--rosa);margin:0 auto 24px;
+  display:grid;place-items:center;border:3px solid var(--tinta);box-shadow:0 6px 0 var(--tinta);
   animation:pop .5s cubic-bezier(.2,.8,.3,1.4) both;
 }
 @keyframes pop{from{transform:scale(.4);opacity:0}}
 .kicker{
   display:inline-flex;align-items:center;gap:10px;font-size:12px;font-weight:700;
-  letter-spacing:.22em;text-transform:uppercase;color:var(--tinta-60);margin-bottom:18px;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--tinta-60);margin-bottom:16px;
 }
 .kicker::before,.kicker::after{content:"";width:22px;height:2px;background:var(--rosa)}
-h1{font-size:clamp(34px,6vw,58px);font-weight:800;line-height:1;letter-spacing:-.03em;text-wrap:balance}
+h1{font-size:clamp(30px,5.2vw,50px);font-weight:800;line-height:1.02;letter-spacing:-.03em;text-wrap:balance}
 h1 em{font-style:italic;color:var(--rosa)}
-.lede{font-size:clamp(17px,2vw,20px);color:var(--tinta-60);max-width:560px;margin:20px auto 0}
+.lede{font-size:clamp(17px,2vw,20px);color:var(--tinta-60);max-width:600px;margin:18px auto 0}
 .lede b{color:var(--tinta)}
 
-.passos{
-  display:grid;gap:14px;max-width:640px;margin:48px auto 0;text-align:left;
+/* grelha calendário + lateral */
+.grelha{display:grid;gap:26px;margin:44px auto 20px;align-items:start}
+/* minmax(0,…) impede o iframe de forçar a coluna a crescer e rebentar o centramento */
+@media(min-width:1000px){.grelha{grid-template-columns:minmax(0,1.35fr) minmax(0,.65fr);gap:34px}}
+
+.cal-caixa{
+  min-width:0;background:#fff;border:2.5px solid var(--tinta);border-radius:18px;overflow:hidden;
+  box-shadow:12px 12px 0 rgba(255,52,156,.3);
 }
-@media(min-width:720px){.passos{grid-template-columns:repeat(3,1fr)}}
+.cal-caixa .cabeca{
+  background:var(--noite);color:#fff;padding:18px 24px;
+  display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+}
+.cal-caixa .cabeca b{font-size:17px;letter-spacing:-.015em;display:block}
+.cal-caixa .cabeca small{display:block;color:rgba(255,255,255,.65);font-size:13px;margin-top:2px}
+.pastilha{
+  background:var(--rosa);color:#fff;font-size:11.5px;font-weight:800;letter-spacing:.08em;
+  text-transform:uppercase;padding:7px 13px;border-radius:99px;white-space:nowrap;
+}
+/* o widget do GHL traz um avatar + título no topo que não queremos;
+   cortamos essa faixa com um viewport e puxamos o iframe para cima.
+   A altura do viewport acompanha a do iframe (o form_embed.js redimensiona-o). */
+.cal-viewport{position:relative;overflow:hidden;background:#fff}
+#cal-frame{width:100%;border:0;display:block;background:#fff;margin-top:var(--corte,-152px);min-height:900px}
+
+/* lateral */
+.lado{display:flex;flex-direction:column;gap:16px}
 .passo{
-  background:#fff;border:2px solid var(--tinta);border-radius:16px;padding:22px 20px;
+  background:#fff;border:2px solid var(--tinta);border-radius:16px;padding:20px;
+  display:flex;gap:14px;align-items:flex-start;
 }
 .passo .n{
-  font-size:34px;font-weight:800;line-height:1;letter-spacing:-.04em;
-  color:transparent;-webkit-text-stroke:2px var(--rosa);display:block;margin-bottom:10px;
+  flex:none;font-size:26px;font-weight:800;line-height:1;letter-spacing:-.04em;
+  color:transparent;-webkit-text-stroke:2px var(--rosa);
 }
-.passo b{display:block;font-size:15.5px;letter-spacing:-.01em;margin-bottom:5px}
+.passo b{display:block;font-size:15.5px;letter-spacing:-.01em;margin-bottom:4px}
 .passo p{font-size:13.5px;color:var(--tinta-60);line-height:1.5}
-
-.contacto{
-  max-width:640px;margin:44px auto 0;background:var(--noite);color:#fff;
-  border-radius:18px;padding:28px 26px;
+.nota{
+  background:var(--noite);color:#fff;border-radius:16px;padding:22px;
 }
-.contacto p{font-size:14.5px;color:rgba(255,255,255,.7)}
-.contacto b{color:#fff}
-.contacto a{color:#fff;font-weight:800;text-decoration:none;border-bottom:2px solid var(--rosa)}
-.voltar{display:inline-block;margin-top:36px;font-size:14px;font-weight:700;color:var(--tinta-60)}
-footer{border-top:1.5px solid var(--linha);padding:22px 0;text-align:center;font-size:12.5px;color:var(--tinta-60)}
+.nota p{font-size:14px;color:rgba(255,255,255,.72);line-height:1.6}
+.nota b{color:#fff}
+.nota a{color:#fff;font-weight:800;text-decoration:none;border-bottom:2px solid var(--rosa)}
+
+footer{border-top:1.5px solid var(--linha);padding:24px 0 30px;text-align:center;font-size:12.5px;color:var(--tinta-60);margin-top:30px}
 </style>
 </head>
 <body>
@@ -67,50 +92,81 @@ footer{border-top:1.5px solid var(--linha);padding:22px 0;text-align:center;font
 <header><div class="wrap hd"><img src="assets/logo-cor.png" alt="Proforma"></div></header>
 
 <main>
-  <div class="wrap">
+  <div class="wrap topo">
     <div class="selo">
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+    </div>
+    <span class="kicker">Pedido recebido</span>
+    <h1>Falta um passo: <em>escolha o seu horário.</em></h1>
+    <p class="lede" id="sub">Marque já os <b>30 minutos</b> com o Ângelo e veja a plataforma a funcionar com a realidade da sua entidade. Se preferir, ligamos-lhe nós — mas quem marca aqui é atendido primeiro.</p>
+  </div>
+
+  <div class="wrap grelha">
+    <div class="cal-caixa">
+      <div class="cabeca">
+        <div>
+          <b>Demonstração do Proforma</b>
+          <small>30 minutos · online · sem compromisso</small>
+        </div>
+        <span class="pastilha">Escolha data e hora ↓</span>
+      </div>
+      <div class="cal-viewport" id="cal-viewport">
+        <iframe id="cal-frame"
+          src="https://api.leadconnectorhq.com/widget/booking/KtoqdnDX9ead8eGfJY2v"
+          scrolling="no" title="Marcar demonstração do Proforma"></iframe>
+      </div>
     </div>
 
-    <span class="kicker">Pedido recebido</span>
-    <h1>Está feito. <em>Agora é connosco.</em></h1>
-    <p class="lede" id="sub">Recebemos o seu pedido de demonstração. <b>Vamos ligar-lhe ainda hoje</b> (ou na próxima manhã útil) para combinar os 30 minutos.</p>
-
-    <div class="passos">
+    <aside class="lado">
       <div class="passo">
         <span class="n">1</span>
-        <b>Ligamos-lhe</b>
-        <p>Uma chamada rápida para confirmar o melhor horário e perceber a sua realidade.</p>
+        <div><b>Escolhe o horário</b><p>Ao lado, na hora que lhe der jeito. Recebe a confirmação por email com o link da reunião.</p></div>
       </div>
       <div class="passo">
         <span class="n">2</span>
-        <b>Demonstração de 30 min</b>
-        <p>A plataforma a funcionar com o cenário da sua entidade — ações, formandos, dossier e faturação.</p>
+        <div><b>30 minutos, com os seus casos</b><p>Ações, formandos, presenças, dossier técnico-pedagógico e faturação — com o cenário da sua entidade, não uma apresentação genérica.</p></div>
       </div>
       <div class="passo">
         <span class="n">3</span>
-        <b>Plano e preço claros</b>
-        <p>Sai da chamada a saber o plano certo para o seu volume e os passos da migração. Sem compromisso.</p>
+        <div><b>Sai a saber o plano e o preço</b><p>E os passos concretos da migração dos seus dados. Sem compromisso.</p></div>
       </div>
-    </div>
-
-    <div class="contacto">
-      <p><b>Não quer esperar pela chamada?</b> Escreva-nos para <a href="mailto:admin@proforma.pt">admin@proforma.pt</a> — respondemos no próprio dia.</p>
-    </div>
-
-    <a class="voltar" href="./">← Voltar à página</a>
+      <div class="nota">
+        <p><b>Não encontra horário que sirva?</b> Escreva para <a href="mailto:admin@proforma.pt">admin@proforma.pt</a> — respondemos no próprio dia e arranjamos um.</p>
+      </div>
+    </aside>
   </div>
 </main>
 
 <footer>© 2026 Proforma · Rua Professor Manuel Baganha, 283 · 4350-009 Porto</footer>
 
+<script src="https://link.msgsndr.com/js/form_embed.js" defer></script>
+<script>
+/* O form_embed.js do GHL redimensiona o iframe conforme o passo (datas → horas → dados).
+   Aqui só mantemos o viewport a acompanhar essa altura, já sem a faixa cortada. */
+(function(){
+  var CORTE = 152;                                  /* px do topo do widget a esconder */
+  var FOLGA = 96;                                   /* espaço morto no fundo do widget */
+  var frame = document.getElementById('cal-frame');
+  var vp    = document.getElementById('cal-viewport');
+  if(!frame || !vp) return;
+  function ajusta(){
+    var h = frame.getBoundingClientRect().height;
+    if(h > 200) vp.style.height = Math.max(420, Math.round(h - CORTE - FOLGA)) + 'px';
+  }
+  new ResizeObserver(ajusta).observe(frame);
+  frame.addEventListener('load', ajusta);
+  window.addEventListener('message', function(){ setTimeout(ajusta, 60); });
+  setInterval(ajusta, 1200);                        /* rede de segurança */
+  ajusta();
+})();
+</script>
 <script>
 /* personalização leve pela resposta do dropdown (vem no querystring) */
 (function(){
-  var tipo=new URLSearchParams(location.search).get('tipo')||'';
-  var sub=document.getElementById('sub');
-  if(/certifica/i.test(tipo) && /processo/i.test(tipo)){
-    sub.innerHTML='Recebemos o seu pedido. Como ainda está em processo de certificação, na chamada vamos também mostrar-lhe <b>como o Proforma o ajuda a chegar lá com o dossier já em ordem</b>.';
+  var tipo = new URLSearchParams(location.search).get('tipo') || '';
+  if(/processo de certifica/i.test(tipo)){
+    document.getElementById('sub').innerHTML =
+      'Marque já os <b>30 minutos</b> com o Ângelo. Como ainda está em processo de certificação, vamos mostrar-lhe também <b>como o Proforma o ajuda a chegar lá com o dossier já em ordem</b>.';
   }
 })();
 </script>

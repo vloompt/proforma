@@ -1013,12 +1013,13 @@ footer a{color:rgba(255,255,255,.7);text-decoration:none;margin-left:18px}
   setTimeout(comeca,3000);
 })();
 
-/* Formulário → Thank You (com o tipo no URL p/ personalizar).
-   ⚠️ TODO: ligar ao destino real (GHL/webhook) antes de meter tráfego —
-   por agora os dados NÃO são guardados em lado nenhum. */
+/* Formulário → API serverless (cria contacto no GHL) → Thank You.
+   O token do GHL vive na Vercel (env GHL_TOKEN); nada sensível chega ao browser. */
 (function(){
   var f=document.getElementById('form');
   if(!f) return;
+  var btn=f.querySelector('button[type=submit]');
+  var textoOriginal=btn?btn.innerHTML:'';
   f.addEventListener('submit',function(e){
     e.preventDefault();
     var ok=true;
@@ -1028,11 +1029,24 @@ footer a{color:rgba(255,255,255,.7);text-decoration:none;margin-left:18px}
       else if(el){ el.style.outline=''; }
     });
     if(!ok) return;
-    var tipo=f.elements['tipo'].value||'';
-    location.href='obrigado.html?tipo='+encodeURIComponent(tipo);
+
+    var dados={
+      nome:f.elements['nome'].value,
+      email:f.elements['email'].value,
+      telefone:f.elements['telefone'].value,
+      tipo:f.elements['tipo'].value
+    };
+    if(btn){ btn.disabled=true; btn.innerHTML='A enviar…'; }
+    var irParaTY=function(){
+      location.href='obrigado.html?tipo='+encodeURIComponent(dados.tipo);
+    };
+    fetch('/api/lead',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(dados)
+    }).then(irParaTY).catch(irParaTY);   /* o lead nunca fica preso por falha da API */
   });
-})();
-</script>
+})();</script>
 
 </body>
 </html>
