@@ -486,13 +486,31 @@ footer a{color:rgba(255,255,255,.7);text-decoration:none;margin-left:18px}
    o scroll manualmente. Não interfere depois de ele começar a rolar. */
 (function(){
   try{ history.scrollRestoration='manual'; }catch(e){}
-  var fim=Date.now()+900, utilizadorRolou=false;
-  window.addEventListener('touchstart',function(){utilizadorRolou=true;},{passive:true,once:true});
-  window.addEventListener('wheel',function(){utilizadorRolou=true;},{passive:true,once:true});
-  (function fixarTopo(){
-    if(utilizadorRolou) return;
+  var fim=Date.now()+1600;
+  var rolou=false;      /* scroll INTENCIONAL solta o pino (um simples toque não) */
+  var toqueCampo=0;     /* timestamp do último toque deliberado num campo */
+  window.addEventListener('touchmove',function(){rolou=true;},{passive:true});
+  window.addEventListener('wheel',function(){rolou=true;},{passive:true});
+  window.addEventListener('touchstart',function(e){
+    var t=e.target;
+    if(t && /^(INPUT|SELECT|TEXTAREA|BUTTON|A|LABEL)$/.test(t.tagName)) toqueCampo=Date.now();
+  },{passive:true,capture:true});
+  /* Causa do salto no browser do Meta: ele foca sozinho o 1.º campo ao abrir e o
+     foco arrasta a página até lá. Tiramos-lhe o foco — a menos que tenha sido o
+     utilizador a tocar mesmo num campo (tap deliberado nos últimos 700ms). */
+  document.addEventListener('focusin',function(e){
+    if(Date.now()>=fim) return;
+    if(Date.now()-toqueCampo < 700) return;
+    if(e.target && /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)){
+      var el=e.target;
+      /* blur síncrono dentro do focusin é ignorado pelo browser → diferir */
+      setTimeout(function(){ el.blur(); window.scrollTo(0,0); },0);
+    }
+  },true);
+  (function pino(){
+    if(rolou) return;
     if(window.scrollY>0) window.scrollTo(0,0);
-    if(Date.now()<fim) requestAnimationFrame(fixarTopo);
+    if(Date.now()<fim) requestAnimationFrame(pino);
   })();
 })();
 </script>
