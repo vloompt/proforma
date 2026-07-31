@@ -121,7 +121,8 @@ header{
   display:grid;gap:26px;margin-top:56px;align-items:start;
 }
 @media(min-width:960px){.hero-grid{grid-template-columns:1.25fr .95fr}}
-@media(max-width:959px){.hero-grid form{order:-1}}
+/* no mobile o formulário fica DEPOIS do visual (scroll manual até ele; evita o webview do Meta saltar para o 1º campo) */
+@media(max-width:959px){.hero-vis{order:1}.hero-grid form{order:2}}
 .frame{
   background:#fff;border:2px solid var(--tinta);border-radius:18px;overflow:hidden;
   box-shadow:10px 10px 0 rgba(23,17,31,.12);
@@ -479,6 +480,22 @@ footer a{color:rgba(255,255,255,.7);text-decoration:none;margin-left:18px}
 @media(min-width:900px){.sticky{display:none}}
 @media(max-width:899px){body{padding-bottom:84px}}
 </style>
+<script>
+/* Alguns browsers internos (Meta/Instagram) saltam sozinhos para o 1.º campo do
+   formulário ao abrir. Forçamos o topo nos primeiros instantes — o utilizador faz
+   o scroll manualmente. Não interfere depois de ele começar a rolar. */
+(function(){
+  try{ history.scrollRestoration='manual'; }catch(e){}
+  var fim=Date.now()+900, utilizadorRolou=false;
+  window.addEventListener('touchstart',function(){utilizadorRolou=true;},{passive:true,once:true});
+  window.addEventListener('wheel',function(){utilizadorRolou=true;},{passive:true,once:true});
+  (function fixarTopo(){
+    if(utilizadorRolou) return;
+    if(window.scrollY>0) window.scrollTo(0,0);
+    if(Date.now()<fim) requestAnimationFrame(fixarTopo);
+  })();
+})();
+</script>
 </head>
 <body>
 
