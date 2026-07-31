@@ -1,6 +1,7 @@
 // POST /api/lead — recebe o formulário da LP e cria o contacto no GHL da Proforma.
 // O token vive nas Environment Variables da Vercel (GHL_TOKEN) — nunca no browser.
 const LOCATION_ID = '5CbTg6luv7phqcNzrqu9';           // sub-conta Proforma
+const CF_TIPO = 'vcWVGDxHMHcThHlHH7Fg';               // custom field 'Tipo de entidade (LP)'
 const BASE = 'https://services.leadconnectorhq.com';   // endpoint p/ Private Integration Token
 
 const TAG_POR_TIPO = {
@@ -46,6 +47,7 @@ export default async function handler(req, res) {
         phone: telefone || undefined,
         tags,
         source: 'LP Teste Grátis',
+        customFields: tipo ? [{ id: CF_TIPO, value: tipo }] : undefined,
       }),
     });
 
