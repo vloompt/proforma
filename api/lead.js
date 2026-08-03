@@ -85,6 +85,14 @@ async function enviarCAPI({ email, telefone, firstName, lastName, tipo, eventId,
 }
 
 export default async function handler(req, res) {
+  // health-check: confirma se as env vars estão carregadas, sem criar nada nem expor valores
+  if (req.method === 'GET') {
+    return res.status(200).json({
+      ok: true,
+      hasGhl: !!process.env.GHL_TOKEN,
+      hasCapi: !!process.env.META_CAPI_TOKEN,
+    });
+  }
   if (req.method !== 'POST') return res.status(405).json({ erro: 'método não permitido' });
 
   const token = process.env.GHL_TOKEN;
