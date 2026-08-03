@@ -12,7 +12,9 @@ t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
 document,'script','https://connect.facebook.net/en_US/fbevents.js');
 fbq('init','25693688203628804');
 fbq('track','PageView');
-fbq('track','Lead');   /* conversão: dispara 1x por cada lead que chega à página de agradecimento */
+/* Lead com o MESMO event_id do servidor (?eid=) → o Meta deduplica pixel+CAPI */
+var _eid=(new URLSearchParams(location.search)).get('eid');
+fbq('track','Lead',{},_eid?{eventID:_eid}:undefined);
 </script>
 <noscript><img height="1" width="1" style="display:none" alt=""
 src="https://www.facebook.com/tr?id=25693688203628804&ev=PageView&noscript=1"/></noscript>

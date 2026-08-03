@@ -1078,15 +1078,25 @@ footer a{color:rgba(255,255,255,.7);text-decoration:none;margin-left:18px}
     });
     if(!ok) return;
 
+    /* mesmo event_id no browser (pixel) e no servidor (CAPI) → o Meta deduplica */
+    var eventId=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():('lead-'+Date.now()+'-'+Math.random().toString(16).slice(2));
+    var cookie=function(n){ var m=document.cookie.match('(?:^|; )'+n+'=([^;]*)'); return m?decodeURIComponent(m[1]):''; };
+    var fbclid=(new URLSearchParams(location.search)).get('fbclid')||'';
+
     var dados={
       nome:f.elements['nome'].value,
       email:f.elements['email'].value,
       telefone:f.elements['telefone'].value,
-      tipo:f.elements['tipo'].value
+      tipo:f.elements['tipo'].value,
+      eventId:eventId,
+      fbp:cookie('_fbp'),
+      fbc:cookie('_fbc'),
+      fbclid:fbclid,
+      eventSourceUrl:location.href
     };
     if(btn){ btn.disabled=true; btn.innerHTML='A enviar…'; }
     var irParaTY=function(){
-      location.href='obrigado.html?tipo='+encodeURIComponent(dados.tipo);
+      location.href='obrigado.html?tipo='+encodeURIComponent(dados.tipo)+'&eid='+encodeURIComponent(eventId);
     };
     fetch('/api/lead',{
       method:'POST',
