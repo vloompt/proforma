@@ -75,11 +75,10 @@ h1 em{font-style:italic;color:var(--rosa)}
   background:var(--rosa);color:#fff;font-size:11.5px;font-weight:800;letter-spacing:.08em;
   text-transform:uppercase;padding:7px 13px;border-radius:99px;white-space:nowrap;
 }
-/* o widget do GHL traz um avatar + título no topo que não queremos;
-   cortamos essa faixa com um viewport e puxamos o iframe para cima.
-   A altura do viewport acompanha a do iframe (o form_embed.js redimensiona-o). */
-.cal-viewport{position:relative;overflow:hidden;background:#fff}
-#cal-frame{width:100%;border:0;display:block;background:#fff;margin-top:var(--corte,-152px);min-height:900px}
+/* O calendário «Proforma» já tem topo limpo (sem avatar) — mostramos o widget
+   INTEIRO, sem recorte, para o botão de marcar nunca ser cortado. */
+.cal-viewport{position:relative;overflow:visible;background:#fff}
+#cal-frame{width:100%;border:0;display:block;background:#fff;margin-top:0;min-height:640px}
 
 /* lateral */
 .lado{display:flex;flex-direction:column;gap:16px}
@@ -128,7 +127,7 @@ footer{border-top:1.5px solid var(--linha);padding:24px 0 30px;text-align:center
       </div>
       <div class="cal-viewport" id="cal-viewport">
         <iframe id="cal-frame"
-          src="https://api.leadconnectorhq.com/widget/booking/KtoqdnDX9ead8eGfJY2v"
+          src="https://api.leadconnectorhq.com/widget/booking/tla8x4K6QlPksmy6Er14"
           scrolling="no" title="Marcar demonstração do Proforma"></iframe>
       </div>
     </div>
@@ -158,16 +157,14 @@ footer{border-top:1.5px solid var(--linha);padding:24px 0 30px;text-align:center
 <script src="https://link.msgsndr.com/js/form_embed.js" defer></script>
 <script>
 /* O form_embed.js do GHL redimensiona o iframe conforme o passo (datas → horas → dados).
-   Aqui só mantemos o viewport a acompanhar essa altura, já sem a faixa cortada. */
+   Mostramos o widget INTEIRO (sem recorte) para o botão de marcar nunca ser cortado. */
 (function(){
-  var CORTE = 152;                                  /* px do topo do widget a esconder */
-  var FOLGA = 96;                                   /* espaço morto no fundo do widget */
   var frame = document.getElementById('cal-frame');
   var vp    = document.getElementById('cal-viewport');
   if(!frame || !vp) return;
   function ajusta(){
     var h = frame.getBoundingClientRect().height;
-    if(h > 200) vp.style.height = Math.max(420, Math.round(h - CORTE - FOLGA)) + 'px';
+    if(h > 200) vp.style.height = Math.round(h) + 'px';   /* altura = widget completo */
   }
   new ResizeObserver(ajusta).observe(frame);
   frame.addEventListener('load', ajusta);
